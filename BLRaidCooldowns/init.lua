@@ -8,6 +8,8 @@ local CB = LibStub("LibCandyBar-3.0")
 local curr = {}
 local cooldownRoster = {}
 local tmp = {}
+local BLRCDt = {}
+BLRCDt['handles'] ={}
 
 
 if not BLRCD then return end
@@ -404,7 +406,11 @@ function BLRCD:StartCD(frame,cooldown,text,guid,caster,frameicon, spell)
 	local bar = BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
 	
 	local args = {cooldown,guid,frame,text,bar,caster,spell}
-	BLRCD:ScheduleTimer("StopCD", cooldown['CD'],args)
+	local handle = BLRCD:ScheduleTimer("StopCD", cooldown['CD'],args)
+	if not BLRCDt['handles'][guid] then
+		BLRCDt['handles'][guid] = {}
+	end
+	BLRCDt['handles'][guid][spell] = {args,handle,bar}
 end
 
 
@@ -428,6 +434,22 @@ function BLRCD:StopCD(args)
 	args[4]:SetText(BLRCD:GetTotalCooldown(args[1]))
 end
 
+function BLRCD:CheckSpecial(guid,spell)
+	if LibRaidInspectMembers[guid]['class'] == 'Shaman' and spell == "Call of the Elements" then
+		for spell,value in pairs(BLRCDt['handles'][guid]) do
+			if spell == "Mana Tide Totem" or spell == "Spirit Link Totem" or spell == "Healing Tide Totem" then
+				BLRCD:StopCD(value[1])
+				BLRCD:CancelTimer(value[2])
+				value[3]:Stop()
+			end
+		end
+	end
+	-- if (LibRaidInspectMembers[sourceGUID]['spec'] == "Restoration") and (spellName == "Tranquility") then
+		-- return 300
+	-- end
+	-- return 0
+end
+
 function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)	
 	if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		local timestamp, type,_, sourceGUID, sourceName,_,_, destGUID, destName = select(1, ...)
@@ -435,6 +457,7 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 			local spellId, spellName, spellSchool = select(12, ...)
 			if(spellId == cooldown['spellID']) then
 				if (LibRaidInspectMembers[sourceGUID]) then
+					BLRCD:CheckSpecial(sourceGUID,spellName)
 					BLRCD:StartCD(frame,cooldown,text,sourceGUID,sourceName,frameicon, spellName)
 					text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	         end
@@ -476,21 +499,18 @@ function BLRCD:UpdateRoster(cooldown)
 		end
 	end
 	for i, char in pairs(LibRaidInspectMembers) do
-		if(UnitInRaid(char['name'])) then
-			if(string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then
-				if(cooldown["spec"]) then
-					if(string.lower(char["spec"])==string.lower(cooldown["spec"])) then
-						cooldownRoster[cooldown['spellID']][i] = char['name']
-					end
-				else
-					cooldownRoster[cooldown['spellID']][i] = char['name']
+		if(UnitInRaid(char['name'])) then 
+               if(string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then 
+                    if(cooldown["spec"]) then 
+                         if(char["spec"]) then 
+                              if(string.lower(char["spec"])==string.lower(cooldown["spec"])) then 
+                                   cooldownRoster[cooldown['spellID']][i] = char['name'] 
+                              end 
+                         end 
+                    else 
+                         cooldownRoster[cooldown['spellID']][i] = char['name'] 
+                    end 
 				end
-			end
-		else
-			if(cooldownRoster[cooldown['spellID']][i]) then
-				cooldownRoster[cooldown['spellID']][i] = nil
-			end
-			LibRaidInspectMembers[i] = nil
 		end
 	end
 end
