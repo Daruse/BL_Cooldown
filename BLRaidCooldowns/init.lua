@@ -5,6 +5,10 @@ local name = "BLRaidCooldown"
 BLRCD = LibStub("AceAddon-3.0"):NewAddon(name, "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 local RI =  LibStub("LibRaidInspect-1.0")
 local CB = LibStub("LibCandyBar-3.0")
+local Elv = IsAddOnLoaded("ElvUI")
+if(Elv) then
+	E, L, V, P, G =  unpack(ElvUI);
+end
 local curr = {}
 local cooldownRoster = {}
 local tmp = {}
@@ -249,6 +253,66 @@ BLRCD.cooldowns = {
 --------------------------------------------------------
 -- Helper Functions --
 --------------------------------------------------------
+function BLRCD:BLHeight(frame, height)
+	if(Elv) then
+		frame:Height(height)
+	else
+		frame:SetHeight(height)
+	end
+end
+
+function BLRCD:BLWidth(frame, width)
+	if(Elv) then
+		frame:Width(width)
+	else
+		frame:SetWidth(width)
+	end
+end
+
+function BLRCD:BLSize(frame, height, width)
+	if(Elv) then
+		frame:Size(height, width)
+	else
+		frame:SetSize(height, width)
+	end
+end
+
+function BLRCD:BLPoint(obj, arg1, arg2, arg3, arg4, arg5)
+	if(Elv) then
+		obj:Point(arg1, arg2, arg3, arg4, arg5)
+	else
+		obj:SetPoint(arg1, arg2, arg3, arg4, arg5)
+	end
+end
+
+function BLRCD:BLTexture()
+	if(Elv) then
+			return E["media"].normTex
+	else
+		return "Interface\\AddOns\\MyAddOn\\statusbar"	
+	end
+end
+
+function BLRCD:BLCreateBG(frame)
+	if(Elv) then
+		local bg = CreateFrame("Frame");
+		bg:SetTemplate("Default")
+		bg:SetParent(frame)
+		bg:ClearAllPoints()
+		bg:Point("TOPLEFT", frame, "TOPLEFT", -2, 2)
+		bg:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
+		bg:SetFrameStrata("MEDIUM")
+		bg:Show()
+	end
+end
+
+function BLRCD:BLFontTemplate(frame, x, y)
+	if(Elv) then
+		frame:FontTemplate(nil, x, y)
+	else
+		frame:SetFont("Fonts\\FRIZQT__.TTF", x, y)
+	end
+end
 
 function BLRCD:print_r ( t )
     local print_r_cache={}
@@ -275,11 +339,9 @@ function BLRCD:print_r ( t )
     sub_print_r(t," ")
 end
 
-
 --------------------------------------------------------
 -- Addon Functions --
 --------------------------------------------------------
-
 function BLRCD:OnEnter(self, cooldown)
    local parent = self:GetParent()
 	GameTooltip:Hide()
@@ -327,15 +389,17 @@ function	BLRCD:ToggleVisibility()
 end
 
 function BLRCD:ToggleMoversLock()
-	local raidcdbase = BLRaidCooldownBase_Frame
+	local raidcdbasemover = BLRaidCooldownBaseMover_Frame
 	if(BLRCD.locked) then
-		raidcdbase:EnableMouse(true)
-		raidcdbase:RegisterForDrag("LeftButton")
+		raidcdbasemover:EnableMouse(true)
+		raidcdbasemover:RegisterForDrag("LeftButton")
+		raidcdbasemover:Show()
 		BLRCD.locked = nil
 		print("unlocked")
 	else
-		raidcdbase:EnableMouse(false)
-		raidcdbase:RegisterForDrag(nil)
+		raidcdbasemover:EnableMouse(false)
+		raidcdbasemover:RegisterForDrag(nil)
+		raidcdbasemover:Hide()
 		BLRCD.locked = true
 		print("locked")
 	end
@@ -377,7 +441,7 @@ function BLRCD:RearrangeBars(anchor)
 end
 
 function BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
-	local bar = CB:New("Interface\\AddOns\\MyAddOn\\statusbar", 100, 9)
+	local bar = CB:New(BLRCD:BLTexture(), 100, 9)
 	frameicon.bars[bar] = true
 	bar:Set("raidcooldowns:module", "raidcooldowns")
 	bar:Set("raidcooldowns:anchor", frameicon)
@@ -389,9 +453,13 @@ function BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
 	bar:SetClampedToScreen(true)
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
+	
 	bar.candyBarLabel:SetJustifyH("LEFT")
 	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
 	bar.candyBarLabel:SetTextColor(classcolor.r,classcolor.g,classcolor.b)
+
+	BLRCD:BLCreateBG(bar)
+	
 	bar:Start()
 	BLRCD:RearrangeBars(bar:Get("raidcooldowns:anchor"))
 	
@@ -539,7 +607,6 @@ end
 --------------------------------------------------------
 BLRCD.frame:UnregisterAllEvents()
 BLRCD.frame:RegisterEvent("ADDON_LOADED")
-BLRCD.frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 BLRCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 BLRCD.frame:RegisterEvent("INSPECT_READY")
 
@@ -574,13 +641,22 @@ end
 -- Frame Management --
 --------------------------------------------------------
 BLRCD.CreateBase = function()
-	local raidcdbase = CreateFrame("Frame", 'BLRaidCooldownBase_Frame', UIParent);
-	raidcdbase:SetSize(32,(30*#BLRCD.cooldowns)+(1*#BLRCD.cooldowns+3));
-	raidcdbase:SetClampedToScreen(true);
-	raidcdbase:SetPoint('TOPLEFT', UIParent, 'TOPLEFT', 7, -50);
-	raidcdbase:SetMovable(true)
-	raidcdbase:SetScript("OnDragStart", function(self) self:StartMoving() end)
-	raidcdbase:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+	local raidcdbasemover = CreateFrame("Frame", 'BLRaidCooldownBaseMover_Frame', UIParent)
+	raidcdbasemover:SetClampedToScreen(true)
+	BLRCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 100, 100)
+	BLRCD:BLSize(raidcdbasemover,32,(32*#BLRCD.cooldowns))
+	raidcdbasemover:SetTemplate()
+	raidcdbasemover:SetMovable(true)
+	raidcdbasemover:SetFrameStrata("HIGH")
+	raidcdbasemover:SetScript("OnDragStart", function(self) self:StartMoving() end)
+	raidcdbasemover:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+	raidcdbasemover:Hide()
+	
+	local raidcdbase = CreateFrame("Frame", 'BLRaidCooldownBase_Frame', UIParent)
+	BLRCD:BLSize(raidcdbase,32,(32*#BLRCD.cooldowns))
+	BLRCD:BLPoint(raidcdbase,'TOPLEFT', raidcdbasemover, 'TOPLEFT')
+	raidcdbase:SetClampedToScreen(true)
+	
 	BLRCD.locked = true
 	if (RI:GroupType() == 2) then
 		raidcdbase:Show()
@@ -590,34 +666,37 @@ end
 
 BLRCD.CreateCooldown = function (index, cooldown)
 	local frame = CreateFrame("Frame", 'BLRaidCooldown'..index, BLRaidCooldownBase_Frame);
-	frame:SetHeight(30);
+	BLRCD:BLHeight(frame,28);
+	BLRCD:BLWidth(frame,145);	
 	frame:SetClampedToScreen(true);
-	frame:SetWidth(145);
-	  
+
 	local frameicon = CreateFrame("Frame", 'BLRaidCooldownIcon'..index, BLRaidCooldownBase_Frame);
+	if(ElvUI) then
+		frameicon:SetTemplate()
+	end
+	
 	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
 	frameicon:SetBackdropBorderColor(classcolor.r,classcolor.g,classcolor.b)
 	frameicon:SetParent(frame)
 	frameicon.bars = {}
-	frameicon:SetSize(30,30);
+	BLRCD:BLSize(frameicon,30,30)
 	frameicon:SetClampedToScreen(true);
 	
 	if index == 1 then
-		frame:SetPoint('TOPLEFT', 'BLRaidCooldownBase_Frame', 'TOPLEFT', 2, -2);
+		BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldownBase_Frame', 'TOPLEFT', 2, -2);
 	else
-		frame:SetPoint('TOPLEFT', 'BLRaidCooldown'..(index-1), 'BOTTOMLEFT', 0, -4);
+		BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldown'..(index-1), 'BOTTOMLEFT', 0, -4);
 	end
-	frameicon:SetPoint('TOPLEFT', frame, 'TOPLEFT');
+	BLRCD:BLPoint(frameicon,'TOPLEFT', frame, 'TOPLEFT');
 	
 	frameicon.icon = frameicon:CreateTexture(nil, "OVERLAY");
 	frameicon.icon:SetTexCoord(unpack(BLRCD.TexCoords));
 	frameicon.icon:SetTexture(select(3, GetSpellInfo(cooldown['spellID'])));
-	frameicon.icon:SetPoint('TOPLEFT', 2, -2);
-	frameicon.icon:SetPoint('BOTTOMRIGHT', -2, 2);
-	
+	BLRCD:BLPoint(frameicon.icon,'TOPLEFT', 2, -2)
+	BLRCD:BLPoint(frameicon.icon,'BOTTOMRIGHT', -2, 2)
 	local text = frameicon:CreateFontString(nil, 'OVERLAY')
-	text:SetPoint("CENTER",frameicon, "CENTER", 1, 0)
-	text:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE")
+	BLRCD:BLFontTemplate(text, 20, 'OUTLINE')
+	BLRCD:BLPoint(text, "CENTER",frameicon, "CENTER", 1, 0)
 	BLRCD:UpdateRoster(cooldown)
 	BLRCD:UpdateCooldown(self,event,unit,cooldown,text,frameicon)
  	
@@ -657,10 +736,6 @@ function BLRCD:ADDON_LOADED(name)
 	if(name=="BLRaidCooldowns") then
 	
 	end
-end
-
-function BLRCD:COMBAT_LOG_EVENT_UNFILTERED(timestamp, type,_, sourceGUID, sourceName,_,_, destGUID, destName)
-
 end
 
 function BLRCD:GROUP_ROSTER_UPDATE(unit, spell)
