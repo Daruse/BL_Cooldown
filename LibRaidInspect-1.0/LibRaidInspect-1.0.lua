@@ -235,9 +235,7 @@ end
 function lib:ADDON_LOADED(name)
 	if(name=="LibRaidInspect-1.0") then
 		if(LibRaidInspectMembers==nil) then
-			if(next(LibRaidInspectMembers)==nil) then
-				LibRaidInspectMembers={}
-			end
+			LibRaidInspectMembers={}
 		end
 		lib.queue = {}
 	end

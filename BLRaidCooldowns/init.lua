@@ -35,14 +35,13 @@ end
 --------------------------------------------------------
 
 BLRCD.cooldowns = {
-   -- Paladin
-	{ -- Aura Mastery
+	     -- Paladin
+	{ -- Devotion Aura
 		spellID = 31821,
-		name = "AM",
+		name = "DA",
 		succ = "SPELL_CAST_SUCCESS",
-		CD = 120,
+		CD = 180,
 		class = "PALADIN",
-		spec = 1,
 	},
 	{ -- Hand of Sacrifice
 		spellID = 6940,
@@ -52,8 +51,7 @@ BLRCD.cooldowns = {
 		class = "PALADIN",
 	},
 	
-	
-   -- Priest
+	     -- Priest
 	{ -- Power Word: Barrier 
 		spellID = 62618,
 		succ = "SPELL_CAST_SUCCESS",
@@ -61,7 +59,7 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "PRIEST", 
 		cast_time = 10,
-		spec = 1,
+		spec = "Discipline",
 	},
 	{ -- Pain Suppression  
 		spellID = 33206,
@@ -70,8 +68,18 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "PRIEST", 
 		cast_time = 8,
-		spec = 1,
+		spec = "Discipline",
 	},
+	{ -- Divine Hymn
+	
+		spellID = 64843,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "DH",
+		CD = 180,
+		class = "PRIEST", 
+		cast_time = 8,
+		spec = "Holy",
+	},	
 	{ -- Guardian Spirit 
 		spellID = 47788,
 		succ = "SPELL_CAST_SUCCESS",
@@ -79,52 +87,56 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "PRIEST", 
 		cast_time = 10,
-		spec = 2,
+		spec = "Holy",
+	},	
+	{ -- Void Shift
+		spellID = 108968,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "VS",
+		CD = 360,
+		class = "PRIEST",
 	},
-	{ -- Hymn of Hope 
+	{ -- Hymn Of Hope
 		spellID = 64901,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "HH",
 		CD = 360,
 		class = "PRIEST", 
-		cast_time = 8,
+		cast_time = 8,	
 	},
-	{ -- Divine Hymn
-		spellID = 64843,
-		succ = "SPELL_CAST_SUCCESS",
-		name = "DH",
-		CD = 480,
-		class = "PRIEST", 
-		cast_time = 8,
-	}, 
-	
-	
-   -- Druid
-	{ -- Rebirth 
-		spellID = 20484,
-		succ = "SPELL_CAST_START",
-		name = "R",
-		CD = 600,
-		class = "DRUID",
-	},
-	{ -- Innervate 
-		spellID = 29166,
-		succ = "SPELL_CAST_SUCCESS",
-		name = "I",
-		CD = 180,
-		class = "DRUID",
-		cast_time = 10,
-	},
+		
+		 -- Druid
 	{ -- Tranquility
 		spellID = 740,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "T",
 		CD = 480,
 		class = "DRUID",
-		cast_time = 8,
+	},
+	{ -- Ironbark
+		spellID = 102342,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "FE",
+		CD = 120,
+		class = "DRUID",
+		spec = "Guardian",
+	},
+	{ -- Rebirth
+		spellID = 20484,
+		succ = "SPELL_CAST_START",
+		name = "R",
+		cd = 600,
+		class = "DRUID",
+	},
+	{ -- Innervate
+		spellID = 29166,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "I",
+		CD = 180,
+		class = "DRUID",
 	},
 	
-	-- Shaman
+		-- Shaman
 	{ -- Spirit Link Totem
 		spellID = 98008,
 		succ = "SPELL_CAST_SUCCESS",
@@ -132,7 +144,7 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "SHAMAN", 
 		cast_time = 6,
-		spec = 3,
+		spec = "Restoration",
 	},
 	{ -- Mana Tide Totem
 		spellID = 16190,
@@ -141,10 +153,56 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "SHAMAN",
 		cast_time = 12,
-		spec = 3,
+		spec = "Restoration",
+	},
+	{ -- Healing Tide Totem
+		spellID = 108280,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "HTT",
+		CD = 180,
+		class = "SHAMAN",
+	},
+	{ -- Stormlash Totem
+		spellID = 120668,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "ST",
+		CD = 300,
+		class = "SHAMAN",
+	},
+	{ -- Call of the Elements
+		spellID = 108285,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "COTE",
+		CD = 480,
+		class = "SHAMAN",
+	},
+	 
+		 -- Monk
+	{	-- Zen Meditation
+		spellID = 115176,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "ZEN",
+		CD = 180,
+		class = "MONK",
+	},
+	{	-- Life Cocoon
+		spellID = 116849,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "LIFE",
+		CD = 120,
+		class = "MONK",
+		spec = "Mistweaver",
+	},
+	{	-- Revival
+		spellID = 115310,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "REV",
+		CD = 180,
+		class = "MONK",
+		spec = "Mistweaver",
 	},
 	
-	-- Warlock
+		 -- Warlock
 	{ -- Soulstone Resurrection
 		spellID = 20707,
 		succ = "SPELL_CAST_START",
@@ -153,7 +211,7 @@ BLRCD.cooldowns = {
 		class = "WARLOCK",
 	},
 	
-	-- Death Knight
+	     -- Death Knight
 	{ -- Raise Ally
 		spellID = 61999,
 		succ = "SPELL_CAST_SUCCESS", 
@@ -167,10 +225,10 @@ BLRCD.cooldowns = {
 		name = "AMZ",
 		CD = 120,
 		class = "DEATHKNIGHT",
-		spec = 3,
+		spec = "Unholy",
 	},
 	
-	-- Warrior
+	     -- Warrior
 	{ -- Rallying Cry
 		spellID = 97462,
 		succ = "SPELL_CAST_SUCCESS",
@@ -178,8 +236,14 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "WARRIOR",
 	},
+	{ -- Demoralizing Banner
+		spellID = 114203,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "DB",
+		CD = 180,
+		class = "WARRIOR",
+	},
 }
-
 --------------------------------------------------------
 -- Helper Functions --
 --------------------------------------------------------
@@ -213,6 +277,20 @@ end
 --------------------------------------------------------
 -- Addon Functions --
 --------------------------------------------------------
+
+function BLRCD:OnEnter(self, cooldown)
+   local parent = self:GetParent()
+	GameTooltip:Hide()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT",3, 14)
+	GameTooltip:ClearLines()
+	GameTooltip:AddSpellByID(cooldown['spellID'])
+	GameTooltip:Show()
+end
+
+function BLRCD:OnLeave(self)
+   GameTooltip:Hide()
+end
+
 function BLRCD:SlashProcessor_BLRCD(input)
 	local v1, v2 = input:match("^(%S*)%s*(.-)$")
 	v1 = v1:lower()
@@ -310,7 +388,7 @@ function BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
 	bar.candyBarLabel:SetJustifyH("LEFT")
-	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class)]
+	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
 	bar.candyBarLabel:SetTextColor(classcolor.r,classcolor.g,classcolor.b)
 	bar:Start()
 	BLRCD:RearrangeBars(bar:Get("raidcooldowns:anchor"))
@@ -365,7 +443,7 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 	elseif(event =="GROUP_ROSTER_UPDATE") then
 		if not(RI:GroupType() == 2) then
 			curr[cooldown['spellID']]={}
-	      RC:CancelBars(frameicon)
+	      BLRCD:CancelBars(frameicon)
 		end
 		text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	else
@@ -399,7 +477,7 @@ function BLRCD:UpdateRoster(cooldown)
 	end
 	for i, char in pairs(LibRaidInspectMembers) do
 		if(UnitInRaid(char['name'])) then
-			if(string.lower(char["class"])==string.lower(cooldown["class"])) then
+			if(string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then
 				if(cooldown["spec"]) then
 					if(string.lower(char["spec"])==string.lower(cooldown["spec"])) then
 						cooldownRoster[cooldown['spellID']][i] = char['name']
@@ -497,7 +575,7 @@ BLRCD.CreateCooldown = function (index, cooldown)
 	frame:SetWidth(145);
 	  
 	local frameicon = CreateFrame("Frame", 'BLRaidCooldownIcon'..index, BLRaidCooldownBase_Frame);
-	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class)]
+	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
 	frameicon:SetBackdropBorderColor(classcolor.r,classcolor.g,classcolor.b)
 	frameicon:SetParent(frame)
 	frameicon.bars = {}
@@ -535,6 +613,15 @@ BLRCD.CreateCooldown = function (index, cooldown)
 		BLRCD:UpdateRoster(cooldown)
 		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 	end)
+	
+	frameicon:SetScript("OnEnter", function(self,event, ...)
+		BLRCD:OnEnter(self, cooldown, cooldownRoster[cooldown['spellID']], curr[cooldown['spellID']])
+   end);
+    
+   frameicon:SetScript("OnLeave", function(self,event, ...)
+		BLRCD:OnLeave(self)
+   end);
+	
 	
 	frame:SetScript("OnEvent", function(self,event, ...)
 		BLRCD:UpdateCooldown(self,event,unit,cooldown,text,frameicon, ...)
