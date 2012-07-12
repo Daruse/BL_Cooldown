@@ -475,9 +475,7 @@ function BLRCD:StartCD(frame,cooldown,text,guid,caster,frameicon, spell)
 	
 	local args = {cooldown,guid,frame,text,bar,caster,spell}
 	local handle = BLRCD:ScheduleTimer("StopCD", cooldown['CD'],args)
-	if not BLRCDt['handles'][guid] then
-		BLRCDt['handles'][guid] = {}
-	end
+	BLRCDt['handles'][guid] = BLRCDt['handles'][guid] or {}
 	BLRCDt['handles'][guid][spell] = {args,handle,bar}
 end
 
@@ -577,8 +575,13 @@ function BLRCD:UpdateRoster(cooldown)
                          end 
                     else 
                          cooldownRoster[cooldown['spellID']][i] = char['name'] 
-                    end 
+					end 
 				end
+		else		
+				if(cooldownRoster[cooldown['spellID']][i]) then
+					cooldownRoster[cooldown['spellID']][i] = nil
+				end
+				LibRaidInspectMembers[i] = nil
 		end
 	end
 end
