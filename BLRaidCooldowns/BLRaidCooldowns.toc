@@ -1,8 +1,10 @@
 ## Interface: 50001
-## Title: |cff1784d1Blood Legion|r Raid Cooldowns
+## Title: |cffc41f3bBL Raid Cooldowns|r
+## Notes: Visual Raid Cooldowns
 ## Author: Methylene
 ## RequiredDeps: LibRaidInspect-1.0, Ace3
 ## OptionalDeps: ElvUI
+## SavedVariables: BLRCDDB
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 
