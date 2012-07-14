@@ -108,16 +108,11 @@ function lib:GetInpectionInfo(unit)
 		if not(LibRaidInspectMembers[guid]) then
 			LibRaidInspectMembers[guid] = {}
 		end
-		print(unit)
-		print(guid)
 		class,_,race,_,_,name = GetPlayerInfoByGUID(guid);
 		LibRaidInspectMembers[guid]['name']   = name
 		LibRaidInspectMembers[guid]['class']  = class
 		LibRaidInspectMembers[guid]['race']   = race
 		self.events:Fire("LibRaidInspect_Add", guid, unit, name)
-		print(name)
-		print(class)
-		print(race)
 		lib:print_r(LibRaidInspectMembers[guid])
 		if (LibRaidInspectMembers[guid]['spec'] == nil) then
 			lib.queue[guid] = name
