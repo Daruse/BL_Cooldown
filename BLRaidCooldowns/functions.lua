@@ -158,10 +158,13 @@ function BLRCD:returnRaidRoster()
 end
 
 function BLRCD:RemovePlayer(guid)
-	for spell,value in pairs(BLRCD['handles'][guid]) do
-		BLRCD:StopCD(value[1])
-		value[3]:Stop()
+	if(BLRCD['handles'][guid]) then
+		for spell,value in pairs(BLRCD['handles'][guid]) do
+			BLRCD:StopCD(value[1])
+			value[3]:Stop()
+		end
 	end
+	LibRaidInspectMembers[guid] = nil
 end
 --------------------------------------------------------
 

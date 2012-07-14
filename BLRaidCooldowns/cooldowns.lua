@@ -19,15 +19,6 @@ BLRCD.cooldowns = {
 		CD = 120,
 		class = "PALADIN",
 	},
-	
-	{ -- Hand of Sacrifice
-		spellID = 1130,
-		name = "HoS",
-		succ = "SPELL_CAST_SUCCESS",
-		CD = 120,
-		class = "HUNTER",
-	},
-	
 	     -- Priest
 	{ -- Power Word: Barrier 
 		spellID = 62618,

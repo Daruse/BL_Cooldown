@@ -5,8 +5,10 @@
 --------------------------------------------------------
 -- TODO --
 --------------------------------------------------------
++ Ace3 Config
++ Ace3 Profiles
 + Cooldown Activation from Config
 + Cooldown based on what is in raid
-+ Create Actual config
-+ Talent based cooldown reads
-+ Duration changes based on talent/glyph system
++ 
++
++

@@ -75,6 +75,8 @@ function BLRCD:SlashProcessor_BLRCD(input)
 		BLRCD:print_r(BLRCD.cooldownRoster)
 	elseif v1 == "show" then
 		BLRCD:ToggleVisibility()	
+	elseif v1 == "reset" then
+		RI:Reset()	
 	end
 end
 
@@ -119,7 +121,7 @@ function BLRCD:CheckSpecial(guid,spell)
 	-- return 0
 end
 
-function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)	
+function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 	if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		local timestamp, type,_, sourceGUID, sourceName,_,_, destGUID, destName = select(1, ...)
 		if(type == cooldown['succ']) then
@@ -169,7 +171,9 @@ BLRCD.CreateBase = function()
 	raidcdbasemover:SetClampedToScreen(true)
 	BLRCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 100, 100)
 	BLRCD:BLSize(raidcdbasemover,32,(32*#BLRCD.cooldowns))
-	raidcdbasemover:SetTemplate()
+	if(Elv) then
+		raidcdbasemover:SetTemplate()
+	end
 	raidcdbasemover:SetMovable(true)
 	raidcdbasemover:SetFrameStrata("HIGH")
 	raidcdbasemover:SetScript("OnDragStart", function(self) self:StartMoving() end)
@@ -226,6 +230,11 @@ BLRCD.CreateCooldown = function (index, cooldown)
  	
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+	
+	RI.RegisterCallback (frame, "LibRaidInspect_Add", function(event, ...)
+		BLRCD:UpdateRoster(cooldown)
+		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
+	end)
 	
 	RI.RegisterCallback (frame, "LibRaidInspect_Update", function(event, ...)
 		BLRCD:UpdateRoster(cooldown)

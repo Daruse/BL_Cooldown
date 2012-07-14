@@ -15,32 +15,6 @@ if (not frame) then
 	lib.frame = frame
 end
 --------------------------------------------------------
---[[LibRaidInspectMembers ={
-		['GUID'] = {
-			['name']    = Character Name,
-			['class']   = Character Class,
-			['race']    = Character Race,
-			['realm']    = Character Realm,
-			['spec']    = Character Specialization,
-			['talents'] = {
-				['1'] = Talent 1,
-				['2'] = Talent 2,
-				['3'] = Talent 3,
-				['4'] = Talent 4,
-				['5'] = Talent 5,
-				['6'] = Talent 6,
-			},
-			['glyphs'] = {
-				['1'] = Glyph 1,
-				['2'] = Glyph 2,
-				['3'] = Glyph 3,
-				['4'] = Glyph 4,
-				['5'] = Glyph 5,
-				['6'] = Glyph 6,
-			},
-		},
-	}
-]]
 
 --------------------------------------------------------
 -- Local Variables--
@@ -115,7 +89,7 @@ function lib:CheckInspectQueue()
 		if (not unit) then
 			lib.queue[guid] = nil
 		else
-			if (UnitIsConnected(unit) and CanInspect(unit) and UnitClass(unit)) then
+			if (CanInspect(unit) and UnitClass(unit)) then
 				NotifyInspect(unit)
 				lib.lastInspectPending = 1
 				lib.lastInspectTime = GetTime()
@@ -131,15 +105,21 @@ function lib:GetInpectionInfo(unit)
 	if(unit) then
 		local class, name, race
 		local guid = UnitGUID(unit)
-		LibRaidInspectMembers[guid] = LibRaidInspectMembers[guid] or {}
-		if not(LibRaidInspectMembers[guid]['name']) then
-			class,_,race,_,_,name = GetPlayerInfoByGUID(guid);
-			LibRaidInspectMembers[guid]['name']   = name
-			LibRaidInspectMembers[guid]['class']  = class
-			LibRaidInspectMembers[guid]['race']   = race
-			self.events:Fire("LibRaidInspect_Add", guid, unit, name)
+		if not(LibRaidInspectMembers[guid]) then
+			LibRaidInspectMembers[guid] = {}
 		end
-		if not(LibRaidInspectMembers[guid]['spec']) then	
+		print(unit)
+		print(guid)
+		class,_,race,_,_,name = GetPlayerInfoByGUID(guid);
+		LibRaidInspectMembers[guid]['name']   = name
+		LibRaidInspectMembers[guid]['class']  = class
+		LibRaidInspectMembers[guid]['race']   = race
+		self.events:Fire("LibRaidInspect_Add", guid, unit, name)
+		print(name)
+		print(class)
+		print(race)
+		lib:print_r(LibRaidInspectMembers[guid])
+		if (LibRaidInspectMembers[guid]['spec'] == nil) then
 			lib.queue[guid] = name
 			lib:CheckInspectQueue()
 		end
@@ -246,6 +226,7 @@ function lib:Reset()
 	lib.lastReceived = nil
 	lib.queue = {}
 	LibRaidInspectMembers = {}
+	lib:GROUP_ROSTER_UPDATE()
 end
 --------------------------------------------------------
 
@@ -254,9 +235,9 @@ end
 --------------------------------------------------------
 function lib:ADDON_LOADED(name)
 	if(name=="LibRaidInspect-1.0") then
-		if(LibRaidInspectMembers==nil) then
+		--if(LibRaidInspectMembers==nil) then
 			LibRaidInspectMembers={}
-		end
+		--end
 		lib.queue = {}
 	end
 end
@@ -274,42 +255,44 @@ function lib:UNIT_SPELLCAST_SUCCEEDED(unit, spell)
 end
 
 function lib:GROUP_ROSTER_UPDATE()
-	local memberMAX, unit
-	
-	if(lib:GroupType()==2) then
-		if(GetNumGroupMembers() > 25) then
-			memberMAX = 25
+	if(GetNumGroupMembers() > 0) then
+		local memberMAX, unit
+		
+		if(lib:GroupType()==2) then
+			if(GetNumGroupMembers() > 25) then
+				memberMAX = 25
+			else
+				memberMAX = GetNumGroupMembers()
+			end
+			
+			for i=1, memberMAX do
+				unit = "Raid"..i
+				lib:GetInpectionInfo(unit)
+			end
+		elseif(lib:GroupType()==1) then
+			if(GetNumGroupMembers() > 5) then
+				memberMAX = 4
+			else
+				memberMAX = GetNumGroupMembers()-1
+			end
+			
+			for i=1, memberMAX do
+				unit = "Party"..i
+				lib:GetInpectionInfo(unit)
+			end
+			
+			unit = "Player"
+			lib:GetInpectionInfo(unit)	
 		else
-			memberMAX = GetNumGroupMembers()
+			lib:Reset()
 		end
-		
-		for i=1, memberMAX do
-			unit = "Raid"..i
-			lib:GetInpectionInfo(unit)
-		end
-	elseif(lib:GroupType()==1) then
-		if(GetNumGroupMembers() > 5) then
-			memberMAX = 4
-		else
-			memberMAX = GetNumGroupMembers()-1
-		end
-		
-		for i=1, memberMAX do
-			unit = "Party"..i
-			lib:GetInpectionInfo(unit)
-		end
-		
-		unit = "Player"
-		lib:GetInpectionInfo(unit)	
-	else
-		lib:Reset()
 	end
 	
 	for i, char in pairs(LibRaidInspectMembers) do
 		if not(UnitInRaid(char['name']) or UnitInParty(char['name'])) then
+			print("remove")
 			LibRaidInspectMembers[i] = nil
 			lib.events:Fire("LibRaidInspect_Remove", i, char['name'])
-			
 		end
 	end
 end
