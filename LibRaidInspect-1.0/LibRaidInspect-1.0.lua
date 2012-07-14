@@ -269,6 +269,7 @@ function lib:GROUP_ROSTER_UPDATE()
 				unit = "Raid"..i
 				lib:GetInpectionInfo(unit)
 			end
+		--[[REMOVING PARTY SUPPORT TILL IT IS FIXED BY BLIZZARD
 		elseif(lib:GroupType()==1) then
 			if(GetNumGroupMembers() > 5) then
 				memberMAX = 4
@@ -282,7 +283,7 @@ function lib:GROUP_ROSTER_UPDATE()
 			end
 			
 			unit = "Player"
-			lib:GetInpectionInfo(unit)	
+			lib:GetInpectionInfo(unit)	]]
 		else
 			lib:Reset()
 		end
