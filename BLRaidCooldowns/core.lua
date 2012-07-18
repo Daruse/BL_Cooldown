@@ -135,6 +135,7 @@ function BLRCD:StopCD(args)
 end
 
 function BLRCD:CheckSpecial(guid,spell)
+--[[
 	if LibRaidInspectMembers[guid]['class'] == 'Shaman' and spell == "Call of the Elements" then
 		for spell,value in pairs(BLRCD['handles'][guid]) do
 			if spell == "Mana Tide Totem" or spell == "Spirit Link Totem" or spell == "Healing Tide Totem" then
@@ -146,7 +147,7 @@ function BLRCD:CheckSpecial(guid,spell)
 	-- if (LibRaidInspectMembers[sourceGUID]['spec'] == "Restoration") and (spellName == "Tranquility") then
 		-- return 300
 	-- end
-	-- return 0
+	-- return 0]]
 end
 
 function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
@@ -156,7 +157,7 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 			local spellId, spellName, spellSchool = select(12, ...)
 			if(spellId == cooldown['spellID']) then
 				if (LibRaidInspectMembers[sourceGUID]) then
-					BLRCD:CheckSpecial(sourceGUID,spellName)
+					--0BLRCD:CheckSpecial(sourceGUID,spellName)
 					BLRCD:StartCD(frame,cooldown,text,sourceGUID,sourceName,frameicon, spellName)
 					text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	         end
