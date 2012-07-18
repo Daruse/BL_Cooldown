@@ -14,7 +14,7 @@ BLRCD.cooldowns = {
 	},
 	{ -- Hand of Sacrifice
 		spellID = 6940,
-		name = "HoS",
+		name = "HOS",
 		succ = "SPELL_CAST_SUCCESS",
 		CD = 120,
 		class = "PALADIN",
@@ -137,13 +137,13 @@ BLRCD.cooldowns = {
 		CD = 300,
 		class = "SHAMAN",
 	},
-	-- { -- Call of the Elements
-		-- spellID = 108285,
-		-- succ = "SPELL_CAST_SUCCESS",
-		-- name = "COTE",
-		-- CD = 480,
-		-- class = "SHAMAN",
-	-- },
+	{ -- Call of the Elements
+		spellID = 108285,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "COTE",
+		CD = 480,
+		class = "SHAMAN",
+	},
 	 
 		 -- Monk
 	{	-- Zen Meditation

@@ -4,6 +4,11 @@
 local BLRCD = BLRCD
 local RI = LibStub("LibRaidInspect-1.0")
 local CB = LibStub("LibCandyBar-3.0")
+local AceConfig = LibStub("AceConfig-3.0") -- For the options panel
+local AceConfigDialog = LibStub("AceConfigDialog-3.0") -- Also for options panel
+local AceDB = LibStub("AceDB-3.0") -- Makes saving things relaly easy
+local AceDBOptions = LibStub("AceDBOptions-3.0") -- More database options
+
 local Elv = IsAddOnLoaded("ElvUI")
 
 if(Elv) then
@@ -21,26 +26,31 @@ BLRCD.handles = {}
 local count = 0
 function BLRCD:OnInitialize()
 	if count == 1 then return end
-	BLRCD.CreateBase()
 	BLRCD:RegisterChatCommand("BLRCD", "SlashProcessor_BLRCD")
 	
 	-- DB
-	self.db = LibStub("AceDB-3.0"):New("BLRCDDB", self.defaults, "Default")
-	BLRCDDB = BLRCDDB or {}
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("BLRCD", self.options)
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BLRCD", "BL Raid Cooldowns")
-
-	-- Profiles
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("BLRCD-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
-	self.profilesFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BLRCD-Profiles", "Profiles", "BLRCD")
+	BLRCD.db = AceDB:New("BLRCDDB", BLRCD.defaults, true)
 	
+	--self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
+	--self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+	--self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
+	
+	BLRCD.profileDB = BLRCD.db.profile
+	BLRCD:SetupOptions()
+	
+	BLRCD.CreateBase()
 	local index = 0
 	for i, cooldown in pairs(BLRCD.cooldowns) do
-	   index = index + 1;
-   	BLRCD.curr[cooldown['spellID']] = {}
-		BLRCD.cooldownRoster[cooldown['spellID']] = {}
-   	BLRCD.CreateCooldown(index, cooldown);
-   end    
+		if (BLRCD.db.profile.cooldown[cooldown['name']]) then
+			index = index + 1;
+			BLRCD.curr[cooldown['spellID']] = {}
+			BLRCD.cooldownRoster[cooldown['spellID']] = {}
+			BLRCD.CreateCooldown(index, cooldown);
+		end
+   end
+	BLRCD.active = index
+	BLRCD:CheckVisibility()
+	
    count = 1
 end
 
@@ -82,9 +92,18 @@ end
 
 function BLRCD:StartCD(frame,cooldown,text,guid,caster,frameicon, spell)
 	if not (BLRCD.curr[cooldown['spellID']][guid]) then
-	    BLRCD.curr[cooldown['spellID']][guid]=guid
+	   BLRCD.curr[cooldown['spellID']][guid]=guid
    end
-	 
+	
+	if(BLRCD.profileDB.castannounce) then
+		local name = select(1, GetSpellInfo(cooldown['spellID']))
+		if(RI:GroupType()==2) then
+			SendChatMessage(caster.." Casts "..name.." "..cooldown['CD'].."CD" ,"RAID");
+		else
+			SendChatMessage(caster.." Casts "..name.." "..cooldown['CD'].."CD" ,"PARTY");
+		end
+	end
+		
 	local bar = BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
 	
 	local args = {cooldown,guid,frame,text,bar,caster,spell}
@@ -103,10 +122,27 @@ function BLRCD:StopCD(args)
 		BLRCD:RearrangeBars(a) 
 	end
 	
+	if(BLRCD.profileDB.cdannounce) then
+		local name = select(1, GetSpellInfo(args[1]['spellID']))
+		if(RI:GroupType()==2) then
+			SendChatMessage(args[6].."'s "..name.." CD UP" ,"RAID");
+		else
+			SendChatMessage(args[6].."'s "..name.." CD UP" ,"PARTY");
+		end
+	end
+		
 	args[4]:SetText(BLRCD:GetTotalCooldown(args[1]))
 end
 
 function BLRCD:CheckSpecial(guid,spell)
+	if LibRaidInspectMembers[guid]['class'] == 'Shaman' and spell == "Call of the Elements" then
+		for spell,value in pairs(BLRCD['handles'][guid]) do
+			if spell == "Mana Tide Totem" or spell == "Spirit Link Totem" or spell == "Healing Tide Totem" then
+				BLRCD:StopCD(value[1])
+				value[3]:Stop()
+			end
+		end
+	end
 	-- if (LibRaidInspectMembers[sourceGUID]['spec'] == "Restoration") and (spellName == "Tranquility") then
 		-- return 300
 	-- end
@@ -120,7 +156,7 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 			local spellId, spellName, spellSchool = select(12, ...)
 			if(spellId == cooldown['spellID']) then
 				if (LibRaidInspectMembers[sourceGUID]) then
-					--BLRCD:CheckSpecial(sourceGUID,spellName)
+					BLRCD:CheckSpecial(sourceGUID,spellName)
 					BLRCD:StartCD(frame,cooldown,text,sourceGUID,sourceName,frameicon, spellName)
 					text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	         end
@@ -130,6 +166,9 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 		if not(RI:GroupType() == 2 or RI:GroupType() == 1) then
 			BLRCD:UpdateRoster(cooldown)
 	      BLRCD:CancelBars(frameicon)
+			if not(BLRCD.profileDB.show == "alawys") then
+				BLRCD:CheckVisibility()
+			end
 		end
 		text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	elseif(event =="LibRaidInspect_Remove") then
@@ -162,7 +201,7 @@ BLRCD.CreateBase = function()
 	local raidcdbasemover = CreateFrame("Frame", 'BLRaidCooldownBaseMover_Frame', UIParent)
 	raidcdbasemover:SetClampedToScreen(true)
 	BLRCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 100, 100)
-	BLRCD:BLSize(raidcdbasemover,32,(32*#BLRCD.cooldowns))
+	BLRCD:BLSize(raidcdbasemover,32*BLRCD.profileDB.scale,(32*#BLRCD.cooldowns)*BLRCD.profileDB.scale)
 	if(Elv) then
 		raidcdbasemover:SetTemplate()
 	end
@@ -173,7 +212,7 @@ BLRCD.CreateBase = function()
 	raidcdbasemover:Hide()
 	
 	local raidcdbase = CreateFrame("Frame", 'BLRaidCooldownBase_Frame', UIParent)
-	BLRCD:BLSize(raidcdbase,32,(32*#BLRCD.cooldowns))
+	BLRCD:BLSize(raidcdbase,32*BLRCD.profileDB.scale,(32*#BLRCD.cooldowns)*BLRCD.profileDB.scale)
 	BLRCD:BLPoint(raidcdbase,'TOPLEFT', raidcdbasemover, 'TOPLEFT')
 	raidcdbase:SetClampedToScreen(true)
 	
@@ -186,8 +225,8 @@ end
 
 BLRCD.CreateCooldown = function (index, cooldown)
 	local frame = CreateFrame("Frame", 'BLRaidCooldown'..index, BLRaidCooldownBase_Frame);
-	BLRCD:BLHeight(frame,28);
-	BLRCD:BLWidth(frame,145);	
+	BLRCD:BLHeight(frame,28*BLRCD.profileDB.scale);
+	BLRCD:BLWidth(frame,145*BLRCD.profileDB.scale);	
 	frame:SetClampedToScreen(true);
 
 	local frameicon = CreateFrame("Frame", 'BLRaidCooldownIcon'..index, BLRaidCooldownBase_Frame);
@@ -199,43 +238,52 @@ BLRCD.CreateCooldown = function (index, cooldown)
 	frameicon:SetBackdropBorderColor(classcolor.r,classcolor.g,classcolor.b)
 	frameicon:SetParent(frame)
 	frameicon.bars = {}
-	BLRCD:BLSize(frameicon,30,30)
+	BLRCD:BLSize(frameicon,30*BLRCD.profileDB.scale,30*BLRCD.profileDB.scale)
 	frameicon:SetClampedToScreen(true);
 	
-	if index == 1 then
-		BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldownBase_Frame', 'TOPLEFT', 2, -2);
-	else
-		BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldown'..(index-1), 'BOTTOMLEFT', 0, -4);
+	if(BLRCD.profileDB.growth == "left") then
+	    if index == 1 then
+			BLRCD:BLPoint(frame,'TOPRIGHT', 'BLRaidCooldownBase_Frame', 'TOPRIGHT', 2, -2);
+		else
+			BLRCD:BLPoint(frame,'TOPRIGHT', 'BLRaidCooldown'..(index-1), 'TOPRIGHT', 0, -4);
+		end
+		BLRCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
+	elseif(BLRCD.profileDB.growth  == "right") then
+		if index == 1 then
+			BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldownBase_Frame', 'TOPLEFT', 2, -2);
+		else
+			BLRCD:BLPoint(frame,'TOPLEFT', 'BLRaidCooldown'..(index-1), 'BOTTOMLEFT', 0, -4);
+		end
+		BLRCD:BLPoint(frameicon,'TOPLEFT', frame, 'TOPLEFT');
 	end
-	BLRCD:BLPoint(frameicon,'TOPLEFT', frame, 'TOPLEFT');
 	
 	frameicon.icon = frameicon:CreateTexture(nil, "OVERLAY");
 	frameicon.icon:SetTexCoord(unpack(BLRCD.TexCoords));
 	frameicon.icon:SetTexture(select(3, GetSpellInfo(cooldown['spellID'])));
 	BLRCD:BLPoint(frameicon.icon,'TOPLEFT', 2, -2)
 	BLRCD:BLPoint(frameicon.icon,'BOTTOMRIGHT', -2, 2)
-	local text = frameicon:CreateFontString(nil, 'OVERLAY')
-	BLRCD:BLFontTemplate(text, 20, 'OUTLINE')
-	BLRCD:BLPoint(text, "CENTER",frameicon, "CENTER", 1, 0)
+	frameicon.text = frameicon:CreateFontString(nil, 'OVERLAY')
+	BLRCD:BLFontTemplate(frameicon.text, 20*BLRCD.profileDB.scale, 'OUTLINE')
+	BLRCD:BLPoint(frameicon.text, "CENTER",frameicon, "CENTER", 1, 0)
 	BLRCD:UpdateRoster(cooldown)
-	BLRCD:UpdateCooldown(self,event,unit,cooldown,text,frameicon)
+	BLRCD:UpdateCooldown(self,event,unit,cooldown,frameicon.text,frameicon)
  	
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	
 	RI.RegisterCallback (frame, "LibRaidInspect_Add", function(event, ...)
 		BLRCD:UpdateRoster(cooldown)
-		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
+		BLRCD:UpdateCooldown(frame,event,unit,cooldown,frameicon.text,frameicon, ...)
 	end)
 	
 	RI.RegisterCallback (frame, "LibRaidInspect_Update", function(event, ...)
 		BLRCD:UpdateRoster(cooldown)
-		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
+		BLRCD:UpdateCooldown(frame,event,unit,cooldown,frameicon.text,frameicon, ...)
 	end)
 	
 	RI.RegisterCallback (frame, "LibRaidInspect_Remove", function(event, ...)
 		BLRCD:UpdateRoster(cooldown)
-		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
+		BLRCD:UpdateCooldown(frame,event,unit,cooldown,frameicon.text,frameicon, ...)
 	end)
 	
 	frameicon:SetScript("OnEnter", function(self,event, ...)
@@ -247,7 +295,7 @@ BLRCD.CreateCooldown = function (index, cooldown)
    end);
 	
 	frame:SetScript("OnEvent", function(self,event, ...)
-		BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
+		BLRCD:UpdateCooldown(frame,event,unit,cooldown,frameicon.text,frameicon, ...)
    end);
 		
 	frame:Show()

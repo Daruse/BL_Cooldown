@@ -15,6 +15,40 @@ end
 --------------------------------------------------------
 -- Helper Functions --
 --------------------------------------------------------
+function BLRCD:Scale()
+	local raidcdbase = BLRaidCooldownBase_Frame
+	local raidcdbasemover = BLRaidCooldownBaseMover_Frame
+	BLRCD:BLSize(raidcdbase,32*BLRCD.profileDB.scale,(32*BLRCD.active)*BLRCD.profileDB.scale)
+	BLRCD:BLSize(raidcdbasemover,32*BLRCD.profileDB.scale,(32*BLRCD.active)*BLRCD.profileDB.scale)
+	for i=1,BLRCD.active do
+		BLRCD:BLHeight(_G['BLRaidCooldown'..i],28*BLRCD.profileDB.scale);
+		BLRCD:BLWidth(_G['BLRaidCooldown'..i],145*BLRCD.profileDB.scale);	
+		BLRCD:BLSize(_G['BLRaidCooldownIcon'..i],28*BLRCD.profileDB.scale);
+		BLRCD:BLFontTemplate(_G['BLRaidCooldownIcon'..i].text, 20*BLRCD.profileDB.scale, 'OUTLINE')
+	end
+end
+
+function BLRCD:CheckVisibility()
+	local frame = BLRaidCooldownBase_Frame
+	if (BLRCD.profileDB.show == "always") then 
+		frame:Show()
+	end
+	
+	if (BLRCD.profileDB.show == "raid") then
+		if(RI:GroupType() == 2) then
+			frame:Show()
+		else
+			frame:Hide()
+		end
+	elseif (BLRCD.profileDB.show == "party") then
+		if(RI:GroupType() > 0) then
+			frame:Show()
+		else
+			frame:Hide()
+		end
+	end
+end
+
 function BLRCD:BLHeight(frame, height)
 	if(Elv) then
 		frame:Height(height)
@@ -198,8 +232,12 @@ function BLRCD:RearrangeBars(anchor)
 		local spacing = -6
 		bar:ClearAllPoints()
 		if not (lastDownBar) then
-			bar:SetPoint("TOPLEFT",anchor,"TOPRIGHT", 5, -2)
-    	else    
+	      if(BLRCD.profileDB.growth  == "right") then
+	    	   bar:SetPoint("TOPLEFT",anchor,"TOPRIGHT", 5, -2)
+			elseif(BLRCD.profileDB.growth  == "left") then
+	    	   bar:SetPoint("TOPRIGHT",anchor,"TOPLEFT", -5, -2)
+		   end	    
+		else    
     		bar:SetPoint("TOPLEFT", lastDownBar, "BOTTOMLEFT", 0, -6)
 		end
 		lastDownBar = bar
@@ -275,13 +313,13 @@ function BLRCD:ToggleMoversLock()
 		raidcdbasemover:RegisterForDrag("LeftButton")
 		raidcdbasemover:Show()
 		BLRCD.locked = nil
-		print("unlocked")
+		print("|cffc41f3bBL Raid Cooldowns|r: unlocked")
 	else
 		raidcdbasemover:EnableMouse(false)
 		raidcdbasemover:RegisterForDrag(nil)
 		raidcdbasemover:Hide()
 		BLRCD.locked = true
-		print("locked")
+		print("|cffc41f3bBL Raid Cooldowns|r: locked")
 	end
 end
 --------------------------------------------------------

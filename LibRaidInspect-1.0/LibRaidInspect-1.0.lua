@@ -113,7 +113,6 @@ function lib:GetInpectionInfo(unit)
 		LibRaidInspectMembers[guid]['class']  = class
 		LibRaidInspectMembers[guid]['race']   = race
 		self.events:Fire("LibRaidInspect_Add", guid, unit, name)
-		lib:print_r(LibRaidInspectMembers[guid])
 		if (LibRaidInspectMembers[guid]['spec'] == nil) then
 			lib.queue[guid] = name
 			lib:CheckInspectQueue()
@@ -230,9 +229,9 @@ end
 --------------------------------------------------------
 function lib:ADDON_LOADED(name)
 	if(name=="LibRaidInspect-1.0") then
-		--if(LibRaidInspectMembers==nil) then
+		if(LibRaidInspectMembers==nil) then
 			LibRaidInspectMembers={}
-		--end
+		end
 		lib.queue = {}
 	end
 end
@@ -286,7 +285,6 @@ function lib:GROUP_ROSTER_UPDATE()
 	
 	for i, char in pairs(LibRaidInspectMembers) do
 		if not(UnitInRaid(char['name']) or UnitInParty(char['name'])) then
-			print("remove")
 			LibRaidInspectMembers[i] = nil
 			lib.events:Fire("LibRaidInspect_Remove", i, char['name'])
 		end
