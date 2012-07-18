@@ -167,9 +167,6 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 		if not(RI:GroupType() == 2 or RI:GroupType() == 1) then
 			BLRCD:UpdateRoster(cooldown)
 	      BLRCD:CancelBars(frameicon)
-			if not(BLRCD.profileDB.show == "alawys") then
-				BLRCD:CheckVisibility()
-			end
 		end
 		text:SetText(BLRCD:GetTotalCooldown(cooldown))
 	elseif(event =="LibRaidInspect_Remove") then
@@ -177,7 +174,7 @@ function BLRCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 		BLRCD:RemovePlayer(guid)
 	else
 		text:SetText(BLRCD:GetTotalCooldown(cooldown))
-	end
+	end	
 end
 
 function BLRCD:GetTotalCooldown(cooldown)
@@ -201,7 +198,7 @@ end
 BLRCD.CreateBase = function()
 	local raidcdbasemover = CreateFrame("Frame", 'BLRaidCooldownBaseMover_Frame', UIParent)
 	raidcdbasemover:SetClampedToScreen(true)
-	BLRCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 100, 100)
+	BLRCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 0, 0)
 	BLRCD:BLSize(raidcdbasemover,32*BLRCD.profileDB.scale,(32*#BLRCD.cooldowns)*BLRCD.profileDB.scale)
 	if(Elv) then
 		raidcdbasemover:SetTemplate()
@@ -246,7 +243,7 @@ BLRCD.CreateCooldown = function (index, cooldown)
 	    if index == 1 then
 			BLRCD:BLPoint(frame,'TOPRIGHT', 'BLRaidCooldownBase_Frame', 'TOPRIGHT', 2, -2);
 		else
-			BLRCD:BLPoint(frame,'TOPRIGHT', 'BLRaidCooldown'..(index-1), 'TOPRIGHT', 0, -4);
+			BLRCD:BLPoint(frame,'TOPRIGHT', 'BLRaidCooldown'..(index-1), 'BOTTOMRIGHT', 0, -4);
 		end
 		BLRCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
 	elseif(BLRCD.profileDB.growth  == "right") then

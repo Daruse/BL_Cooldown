@@ -102,20 +102,22 @@ function lib:CheckInspectQueue()
 end
 
 function lib:GetInpectionInfo(unit)
-	if(unit) then
-		local class, name, race
-		local guid = UnitGUID(unit)
-		if not(LibRaidInspectMembers[guid]) then
-			LibRaidInspectMembers[guid] = {}
-		end
-		class,_,race,_,_,name = GetPlayerInfoByGUID(guid);
-		LibRaidInspectMembers[guid]['name']   = name
-		LibRaidInspectMembers[guid]['class']  = class
-		LibRaidInspectMembers[guid]['race']   = race
-		self.events:Fire("LibRaidInspect_Add", guid, unit, name)
-		if (LibRaidInspectMembers[guid]['spec'] == nil) then
-			lib.queue[guid] = name
-			lib:CheckInspectQueue()
+	if(lib:GroupType()>0) then
+		if(unit) then
+			local class, name, race
+			local guid = UnitGUID(unit)
+			if not(LibRaidInspectMembers[guid]) then
+				LibRaidInspectMembers[guid] = {}
+			end
+			class,_,race,_,_,name = GetPlayerInfoByGUID(guid);
+			LibRaidInspectMembers[guid]['name']   = name
+			LibRaidInspectMembers[guid]['class']  = class
+			LibRaidInspectMembers[guid]['race']   = race
+			self.events:Fire("LibRaidInspect_Add", guid, unit, name)
+			if (LibRaidInspectMembers[guid]['spec'] == nil) then
+				lib.queue[guid] = name
+				lib:CheckInspectQueue()
+			end
 		end
 	end
 end
@@ -263,7 +265,6 @@ function lib:GROUP_ROSTER_UPDATE()
 				unit = "Raid"..i
 				lib:GetInpectionInfo(unit)
 			end
-		--[[REMOVING PARTY SUPPORT TILL IT IS FIXED BY BLIZZARD
 		elseif(lib:GroupType()==1) then
 			if(GetNumGroupMembers() > 5) then
 				memberMAX = 4
@@ -277,8 +278,8 @@ function lib:GROUP_ROSTER_UPDATE()
 			end
 			
 			unit = "Player"
-			lib:GetInpectionInfo(unit)	]]
-		else
+			lib:GetInpectionInfo(unit)
+		elseif(lib:GroupType()==0) then
 			lib:Reset()
 		end
 	end
@@ -289,6 +290,8 @@ function lib:GROUP_ROSTER_UPDATE()
 			lib.events:Fire("LibRaidInspect_Remove", i, char['name'])
 		end
 	end
+	rosterevent = 1
+	
 end
 
 -- INSPECT_READY

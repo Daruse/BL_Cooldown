@@ -30,7 +30,7 @@ end
 
 function BLRCD:CheckVisibility()
 	local frame = BLRaidCooldownBase_Frame
-	if (BLRCD.profileDB.show == "always") then 
+	if (BLRCD.profileDB.show == "always") then
 		frame:Show()
 	end
 	
@@ -149,15 +149,21 @@ function BLRCD:UpdateRoster(cooldown)
 		for i, char in pairs(LibRaidInspectMembers) do
 			if(UnitInRaid(char['name']) or UnitInParty(char['name'])) then 
 				if(string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then 
-					if(cooldown["spec"]) then 
+					if(cooldown["spec"]) then
 						if(char["spec"]) then 
 							if(string.lower(char["spec"])==string.lower(cooldown["spec"])) then 
 								BLRCD.cooldownRoster[cooldown['spellID']][i] = char['name'] 
-							end 
-						end 
-					else 
-						BLRCD.cooldownRoster[cooldown['spellID']][i] = char['name'] 
-					end 
+							end
+						end
+					elseif(cooldown["talents"]) then
+						if(char["talents"]) then
+							if(char["talents"][cooldown["talents"]]==cooldown["spellID"]) then 
+								BLRCD.cooldownRoster[cooldown['spellID']][i] = char['name']
+							end
+						end
+					else
+						BLRCD.cooldownRoster[cooldown['spellID']][i] = char['name']
+					end
 				end
 			else		
 				if(BLRCD.cooldownRoster[cooldown['spellID']][i]) then
@@ -220,9 +226,9 @@ function BLRCD:RearrangeBars(anchor)
 	end
 	
 	if(#BLRCD.tmp>2)then
-		frame:SetHeight(14*#BLRCD.tmp);
+		frame:SetHeight((14*#BLRCD.tmp)*BLRCD.profileDB.scale);
 	else
-		frame:SetHeight(28);
+		frame:SetHeight(28*BLRCD.profileDB.scale);
 	end
 
 	table.sort(BLRCD.tmp, barSorter)
@@ -259,8 +265,6 @@ function BLRCD:CreateBar(frame,cooldown,caster,frameicon,guid)
 	bar:SetLabel(caster)
 	
 	bar.candyBarLabel:SetJustifyH("LEFT")
-	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
-	bar.candyBarLabel:SetTextColor(classcolor.r,classcolor.g,classcolor.b)
 
 	BLRCD:BLCreateBG(bar)
 	

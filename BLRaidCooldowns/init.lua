@@ -15,4 +15,18 @@ if (not frame) then
 	frame = CreateFrame("Frame", name .. "_Frame")
 	BLRCD.frame = frame
 end
+
+BLRCD.frame:UnregisterAllEvents()
+BLRCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+
+BLRCD.frame:SetScript("OnEvent", function(this, event, ...)
+	return BLRCD[event](BLRCD, ...)
+end)
+
+function BLRCD:GROUP_ROSTER_UPDATE()
+	if not(BLRCD.profileDB.show == "alawys") then
+		BLRCD:CheckVisibility()
+	end
+end
+
 --------------------------------------------------------

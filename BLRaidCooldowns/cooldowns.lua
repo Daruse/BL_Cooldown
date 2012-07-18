@@ -129,6 +129,7 @@ BLRCD.cooldowns = {
 		name = "HTT",
 		CD = 180,
 		class = "SHAMAN",
+		talents = 5,
 	},
 	{ -- Stormlash Totem
 		spellID = 120668,
