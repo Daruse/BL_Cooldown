@@ -295,6 +295,23 @@ function BLRCD:OnEnter(self, cooldown)
 	GameTooltip:Show()
 end
 
+function BLRCD:PostClick(self, cooldown, rosterCD, curr)
+	if(BLRCD.profileDB.clickannounce) then
+		local allCD,onCD = rosterCD, curr
+		local name = GetSpellInfo(cooldown['spellID'])
+		for i,v in pairs(onCD) do
+			allCD[i] = nil
+		end
+	
+		if next(allCD) ~= nil then
+			SendChatMessage('----- '..name..' -----','raid')
+			for i,v in pairs(allCD) do
+				SendChatMessage(v..' ready!','raid')
+			end
+		end
+	end
+end
+
 function BLRCD:OnLeave(self)
    GameTooltip:Hide()
 end

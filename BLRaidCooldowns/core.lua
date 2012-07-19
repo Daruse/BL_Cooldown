@@ -227,7 +227,7 @@ BLRCD.CreateCooldown = function (index, cooldown)
 	BLRCD:BLWidth(frame,145*BLRCD.profileDB.scale);	
 	frame:SetClampedToScreen(true);
 
-	local frameicon = CreateFrame("Frame", 'BLRaidCooldownIcon'..index, BLRaidCooldownBase_Frame);
+	local frameicon = CreateFrame("Button", 'BLRaidCooldownIcon'..index, BLRaidCooldownBase_Frame);
 	if(ElvUI) then
 		frameicon:SetTemplate()
 	end
@@ -287,6 +287,10 @@ BLRCD.CreateCooldown = function (index, cooldown)
 	frameicon:SetScript("OnEnter", function(self,event, ...)
 		BLRCD:OnEnter(self, cooldown, BLRCD.cooldownRoster[cooldown['spellID']], BLRCD.curr[cooldown['spellID']])
    end);
+   
+	frameicon:SetScript("PostClick", function(self,event, ...)
+		BLRCD:PostClick(self, cooldown, BLRCD.cooldownRoster[cooldown['spellID']], BLRCD.curr[cooldown['spellID']])
+	end);  
     
    frameicon:SetScript("OnLeave", function(self,event, ...)
 		BLRCD:OnLeave(self)

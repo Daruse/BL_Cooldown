@@ -25,6 +25,7 @@ BLRCD.defaults = {
 	profile = {
 		castannounce = false,
 		cdannounce = false,
+		clickannounce = false,
 		scale = 1,
 		growth = "right",
 		show = "always",
@@ -70,7 +71,7 @@ BLRCD.options =  {
 			args = {
 				castannounce = {
 					type = "toggle",
-					name = "Accounce Casts",
+					name = "Announce Casts",
 					order = 2,
 					get = function()
 						return BLRCD.profileDB.castannounce
@@ -81,7 +82,7 @@ BLRCD.options =  {
 				},		
 				cdannounce = {
 					type = "toggle",
-					name = "Accounce CD Expire",
+					name = "Announce CD Expire",
 					order = 3,
 					get = function()
 						return BLRCD.profileDB.cdannounce
@@ -146,6 +147,17 @@ BLRCD.options =  {
 					end,
 					order = 1,
 					width = "full",
+				},
+				clickannounce = {
+					type = "toggle",
+					name = "Click to Announce Available",
+					order = 10,
+					get = function()
+						return BLRCD.profileDB.clickannounce
+					end,
+					set = function(key, value)
+						BLRCD.profileDB.clickannounce = value
+					end,
 				},
 			},
 		},
