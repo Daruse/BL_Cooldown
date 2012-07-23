@@ -188,7 +188,12 @@ function BLRCD:GetTotalCooldown(cooldown)
 		cd=cd+1
 	end
 	
-	return (cdTotal-cd)
+	local total = (cdTotal-cd)
+	if(total < 0) then
+		total = 0
+	end
+		
+	return total
 end
 -------------------------------------------------------
 
