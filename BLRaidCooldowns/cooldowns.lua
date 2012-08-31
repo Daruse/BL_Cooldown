@@ -78,8 +78,9 @@ BLRCD.cooldowns = {
 		spellID = 740,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "T",
-		CD = 480,
+		CD = 180,
 		class = "DRUID",
+		spec = "Restoration",
 	},
 	{ -- Ironbark
 		spellID = 102342,
@@ -87,7 +88,7 @@ BLRCD.cooldowns = {
 		name = "FE",
 		CD = 120,
 		class = "DRUID",
-		spec = "Guardian",
+		spec = "Restoration",
 	},
 	{ -- Rebirth
 		spellID = 20484,
@@ -187,7 +188,7 @@ BLRCD.cooldowns = {
 		name = "AMZ",
 		CD = 120,
 		class = "DEATHKNIGHT",
-		spec = "Unholy",
+		talents = 2,
 	},
 	
 	     -- Warrior
