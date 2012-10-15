@@ -1,0 +1,9 @@
+## Interface: 50001
+## Title: Lib: RaidInspect 1.0
+## Notes: Library to help with querying Raid talents.
+## Author: Methylene
+## Version: $Rev: 1 $
+
+LibStub\LibStub.lua
+CallbackHandler-1.0\CallbackHandler-1.0.lua
+lib.xml
