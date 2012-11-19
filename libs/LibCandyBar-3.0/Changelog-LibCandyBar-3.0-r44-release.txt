@@ -1,0 +1,13 @@
+------------------------------------------------------------------------
+r44 | funkydude | 2012-10-24 22:01:45 +0000 (Wed, 24 Oct 2012) | 1 line
+Changed paths:
+   A /tags/r44-release (from /trunk:43)
+
+Tagging as r44-release
+------------------------------------------------------------------------
+r43 | funkydude | 2012-10-23 13:14:31 +0000 (Tue, 23 Oct 2012) | 1 line
+Changed paths:
+   M /trunk/bars.lua
+
+Use a per-bar variable that stores icon texture to check if the icon should be hidden or not instead of using :GetTexture() which randomly returns nil since WoW v5 (maybe due to how fast it's being checked after being set?) Please report any side effects.
+------------------------------------------------------------------------

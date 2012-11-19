@@ -1,0 +1,29 @@
+------------------------------------------------------------------------
+r45 | anyia3 | 2012-10-25 09:03:10 +0000 (Thu, 25 Oct 2012) | 13 lines
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.0.lua
+
+Improved retry logic.
+
+LGIST will no longer mindlessly retry the next unit in the queue. Instead,
+it will keep track of the number of retries, and once a threshold is reached
+that unit will be kicked down into the stale queue, or if already there, out
+of the queues altogether. It should no longer be possible for LGIST to get
+stuck on inspecting a particular unit due to the server refusing to provide
+information on it. This should address ticket #7, point 2.
+
+Further, if the player is dead, no inspection attempts will be made.
+This should address ticket #7, point 3.
+
+
+------------------------------------------------------------------------
+r44 | anyia3 | 2012-10-25 08:23:24 +0000 (Thu, 25 Oct 2012) | 5 lines
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.0.lua
+
+Hook NotifyInspect before we cache its reference.
+
+This addresses ticket #7, point 1.
+
+
+------------------------------------------------------------------------

@@ -1,40 +1,37 @@
 --------------------------------------------------------
 -- Blood Legion Raidcooldowns - Initialization --
 --------------------------------------------------------
-local name = "BLRaidCooldown"
-BLRCD = LibStub("AceAddon-3.0"):NewAddon(name, "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
+local name = "BLCooldown"
+BLCD = LibStub("AceAddon-3.0"):NewAddon(name, "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
-if not BLRCD then return end
+if not BLCD then return end
 
-if not BLRCD.events then
-	BLRCD.events = LibStub("CallbackHandler-1.0"):New(BLRCD)
+if not BLCD.events then
+	BLCD.events = LibStub("CallbackHandler-1.0"):New(BLCD)
 end
 
-local frame = BLRCD.frame
+local frame = BLCD.frame
 if (not frame) then
 	frame = CreateFrame("Frame", name .. "_Frame")
-	BLRCD.frame = frame
+	BLCD.frame = frame
 end
 
-BLRCD.frame:UnregisterAllEvents()
-BLRCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-BLRCD.frame:RegisterEvent("ADDON_LOADED")
+BLCD.frame:UnregisterAllEvents()
+BLCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+BLCD.frame:RegisterEvent("ADDON_LOADED")
 
-BLRCD.frame:SetScript("OnEvent", function(this, event, ...)
-	return BLRCD[event](BLRCD, ...)
+BLCD.frame:SetScript("OnEvent", function(this, event, ...)
+	return BLCD[event](BLCD, ...)
 end)
 
 
-function BLRCD:ADDON_LOADED(name)
-	if (name == "BLRaidCooldown") then
-		print("|cffc41f3bBlood Legion Cooldowns|r: /blcd lock - Lock and Unlock Frame")
+function BLCD:ADDON_LOADED(name)
+	if (name == "BL_Cooldown") then
+		print("|cffc41f3bBlood Legion Cooldown|r: version 2.0 /blcd for options")
 	end
 end
 
-function BLRCD:GROUP_ROSTER_UPDATE()
-	if not(BLRCD.profileDB.show == "always") then
-		BLRCD:CheckVisibility()
-	end
+function BLCD:GROUP_ROSTER_UPDATE()
+	BLCD:CheckVisibility()
 end
-
 --------------------------------------------------------

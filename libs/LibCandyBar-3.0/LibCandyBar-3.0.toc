@@ -1,5 +1,5 @@
-﻿## Interface: 40300
-## X-Curse-Packaged-Version: r40
+## Interface: 50001
+## X-Curse-Packaged-Version: r44-release
 ## X-Curse-Project-Name: LibCandyBar-3.0
 ## X-Curse-Project-ID: libcandybar-3-0
 ## X-Curse-Repository-ID: wow/libcandybar-3-0/mainline
@@ -12,3 +12,4 @@
 embeds.xml
 
 lib.xml
+

@@ -1,15 +1,17 @@
 --------------------------------------------------------
--- Blood Legion Raidcooldowns - Cooldowns --
+-- Blood Legion Cooldown - Cooldowns --
 --------------------------------------------------------
-local BLRCD = BLRCD
+if not BLCD then return end
+local BLCD = BLCD
 
-BLRCD.cooldowns = {
-	     -- Paladin
+BLCD.cooldowns = {
+-- Paladin
 	{ -- Devotion Aura
 		spellID = 31821,
 		name = "DA",
 		succ = "SPELL_CAST_SUCCESS",
 		CD = 180,
+		cast = 6,
 		class = "PALADIN",
 	},
 	{ -- Hand of Sacrifice
@@ -17,45 +19,45 @@ BLRCD.cooldowns = {
 		name = "HOS",
 		succ = "SPELL_CAST_SUCCESS",
 		CD = 120,
+		cast = 12,
 		class = "PALADIN",
 	},
-	     -- Priest
+-- Priest
 	{ -- Power Word: Barrier 
 		spellID = 62618,
-		succ = "SPELL_CAST_SUCCESS",
 		name = "PWB",
+		succ = "SPELL_CAST_SUCCESS",
 		CD = 180,
-		class = "PRIEST", 
-		cast_time = 10,
-		spec = "Discipline",
+		cast = 10,
+		class = "PRIEST",
+		spec = 256,
 	},
 	{ -- Pain Suppression  
 		spellID = 33206,
-		succ = "SPELL_CAST_SUCCESS",
 		name = "PS",
+		succ = "SPELL_CAST_SUCCESS",
 		CD = 180,
+		cast = 8,
 		class = "PRIEST", 
-		cast_time = 8,
-		spec = "Discipline",
+		spec = 256,
 	},
 	{ -- Divine Hymn
-	
 		spellID = 64843,
-		succ = "SPELL_CAST_SUCCESS",
 		name = "DH",
-		CD = 180,
-		class = "PRIEST", 
-		cast_time = 8,
-		spec = "Holy",
+		succ = "SPELL_CAST_SUCCESS",
+		CD = 180, 
+		cast = 8,
+		class = "PRIEST",
+		spec = 257,
 	},	
 	{ -- Guardian Spirit 
 		spellID = 47788,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "GS",
 		CD = 180,
+		cast = 10,
 		class = "PRIEST", 
-		cast_time = 10,
-		spec = "Holy",
+		spec = 257,
 	},	
 	{ -- Void Shift
 		spellID = 108968,
@@ -68,33 +70,33 @@ BLRCD.cooldowns = {
 		spellID = 64901,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "HH",
-		CD = 360,
-		class = "PRIEST", 
-		cast_time = 8,	
+		CD = 360, 
+		cast = 8,
+		class = "PRIEST",
 	},
-		
-		 -- Druid
+-- Druid
 	{ -- Tranquility
 		spellID = 740,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "T",
-		CD = 180,
+		CD = 480,
+		cast = 8,
 		class = "DRUID",
-		spec = "Restoration",
 	},
 	{ -- Ironbark
 		spellID = 102342,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "FE",
 		CD = 120,
+		cast = 8,
 		class = "DRUID",
-		spec = "Restoration",
+		spec = 105,
 	},
 	{ -- Rebirth
 		spellID = 20484,
-		succ = "SPELL_CAST_START",
+		succ = "SPELL_RESURRECT",
 		name = "R",
-		cd = 600,
+		CD = 600,
 		class = "DRUID",
 	},
 	{ -- Innervate
@@ -104,25 +106,24 @@ BLRCD.cooldowns = {
 		CD = 180,
 		class = "DRUID",
 	},
-	
-		-- Shaman
+-- Shaman
 	{ -- Spirit Link Totem
 		spellID = 98008,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "SLT",
 		CD = 180,
+		cast = 6,
 		class = "SHAMAN", 
-		cast_time = 6,
-		spec = "Restoration",
+		spec = 264,
 	},
 	{ -- Mana Tide Totem
 		spellID = 16190,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "MTT",
 		CD = 180,
+		cast = 12,
 		class = "SHAMAN",
-		cast_time = 12,
-		spec = "Restoration",
+		spec = 264,
 	},
 	{ -- Healing Tide Totem
 		spellID = 108280,
@@ -130,22 +131,23 @@ BLRCD.cooldowns = {
 		name = "HTT",
 		CD = 180,
 		class = "SHAMAN",
-		talents = 5,
+		talent = 5,
 	},
 	{ -- Stormlash Totem
 		spellID = 120668,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "ST",
 		CD = 300,
+		cast = 10,
 		class = "SHAMAN",
 	},
-	 
-		 -- Monk
+ -- Monk
 	{	-- Zen Meditation
 		spellID = 115176,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "ZEN",
 		CD = 180,
+		cast = 8,
 		class = "MONK",
 	},
 	{	-- Life Cocoon
@@ -153,8 +155,9 @@ BLRCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		name = "LIFE",
 		CD = 120,
+		cast = 12,
 		class = "MONK",
-		spec = "Mistweaver",
+		spec = 270,
 	},
 	{	-- Revival
 		spellID = 115310,
@@ -162,22 +165,20 @@ BLRCD.cooldowns = {
 		name = "REV",
 		CD = 180,
 		class = "MONK",
-		spec = "Mistweaver",
+		spec = 270,
 	},
-	
-		 -- Warlock
+-- Warlock
 	{ -- Soulstone Resurrection
-		spellID = 20707,
-		succ = "SPELL_CAST_START",
+		spellID = 95750,
+		succ = "SPELL_RESURRECT",
 		name = "SR",
-		CD = 900,
+		CD = 600,
 		class = "WARLOCK",
 	},
-	
-	     -- Death Knight
+-- Death Knight
 	{ -- Raise Ally
 		spellID = 61999,
-		succ = "SPELL_CAST_SUCCESS", 
+		succ = "SPELL_RESURRECT", 
 		name = "RA",
 		CD = 600,
 		class = "DEATHKNIGHT",
@@ -187,16 +188,17 @@ BLRCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		name = "AMZ",
 		CD = 120,
+		cast = 10,
 		class = "DEATHKNIGHT",
-		talents = 2,
+		talent = 2,
 	},
-	
-	     -- Warrior
+-- Warrior
 	{ -- Rallying Cry
 		spellID = 97462,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "RC",
 		CD = 180,
+		cast = 10,
 		class = "WARRIOR",
 	},
 	{ -- Demoralizing Banner
@@ -204,7 +206,16 @@ BLRCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		name = "DB",
 		CD = 180,
+		cast = 15,
 		class = "WARRIOR",
 	},
 }
 --------------------------------------------------------
+
+BLCD.cooldownReduction = {
+	["T"] = { -- Tranquility
+				spellID = 740,
+				CD = 180,
+				spec = 105,
+			},
+}

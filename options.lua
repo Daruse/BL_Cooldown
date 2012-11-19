@@ -1,34 +1,34 @@
 --------------------------------------------------------
 -- Blood Legion Raidcooldowns - Options --
 --------------------------------------------------------
-local BLRCD = BLRCD
-local CB = LibStub("LibCandyBar-3.0")
+if not BLCD then return end
+local BLCD = BLCD
 local AceConfig = LibStub("AceConfig-3.0") -- For the options panel
 local AceConfigDialog = LibStub("AceConfigDialog-3.0") -- Also for options panel
 local AceDB = LibStub("AceDB-3.0") -- Makes saving things relaly easy
 local AceDBOptions = LibStub("AceDBOptions-3.0") -- More database options
 
-function BLRCD:SetupOptions()
-	BLRCD.options.args.profile = AceDBOptions:GetOptionsTable(BLRCD.db)
+function BLCD:SetupOptions()
+	BLCD.options.args.profile = AceDBOptions:GetOptionsTable(BLCD.db)
 	
-	AceConfig:RegisterOptionsTable("BLRCD", BLRCD.options, nil)
+	AceConfig:RegisterOptionsTable("BLCD", BLCD.options, nil)
 	
-	BLRCD.optionsFrames = {}
-	BLRCD.optionsFrames.general = AceConfigDialog:AddToBlizOptions("BLRCD", "Blood Legion Cooldowns", nil, "general")
-	BLRCD.optionsFrames.cooldowns = AceConfigDialog:AddToBlizOptions("BLRCD", "Cooldown Settings", "Blood Legion Cooldowns", "cooldowns")
-	BLRCD.optionsFrames.profile = AceConfigDialog:AddToBlizOptions("BLRCD", "Profiles", "Blood Legion Cooldowns", "profile")
+	BLCD.optionsFrames = {}
+	BLCD.optionsFrames.general = AceConfigDialog:AddToBlizOptions("BLCD", "Blood Legion Cooldown", nil, "general")
+	BLCD.optionsFrames.cooldowns = AceConfigDialog:AddToBlizOptions("BLCD", "Cooldown Settings", "Blood Legion Cooldown", "cooldowns")
+	BLCD.optionsFrames.profile = AceConfigDialog:AddToBlizOptions("BLCD", "Profiles", "Blood Legion Cooldown", "profile")
 end
 
-BLRCD.TexCoords = {.08, .92, .08, .92}
+BLCD.TexCoords = {.08, .92, .08, .92}
 
-BLRCD.defaults = {
+BLCD.defaults = {
 	profile = {
 		castannounce = false,
 		cdannounce = false,
 		clickannounce = false,
 		scale = 1,
 		growth = "right",
-		show = "raid",
+		show = "always",
 		cooldown = {
 			DA   = true,
 			HOS  = true,
@@ -59,9 +59,9 @@ BLRCD.defaults = {
 	},
 }
 
-BLRCD.options =  {
+BLCD.options =  {
 	type = "group",
-	name = "Blood Legion Cooldowns",
+	name = "Blood Legion Cooldown",
 	args = {
 		general = {
 			order = 1,
@@ -74,10 +74,10 @@ BLRCD.options =  {
 					name = "Announce Casts",
 					order = 2,
 					get = function()
-						return BLRCD.profileDB.castannounce
+						return BLCD.profileDB.castannounce
 					end,
 					set = function(key, value)
-						BLRCD.profileDB.castannounce = value
+						BLCD.profileDB.castannounce = value
 					end,
 				},		
 				cdannounce = {
@@ -85,10 +85,10 @@ BLRCD.options =  {
 					name = "Announce CD Expire",
 					order = 3,
 					get = function()
-						return BLRCD.profileDB.cdannounce
+						return BLCD.profileDB.cdannounce
 					end,
 					set = function(key, value)
-						BLRCD.profileDB.cdannounce = value
+						BLCD.profileDB.cdannounce = value
 					end,
 				},		
 				scale = {
@@ -98,11 +98,11 @@ BLRCD.options =  {
 					desc = "Sets Scale of Raid Cooldowns",
 					min = 0.3, max = 2, step = 0.01,
 					get = function()
-						return BLRCD.profileDB.scale 
+						return BLCD.profileDB.scale 
 					end,
 					set = function(info, value)
-						BLRCD.profileDB.scale = value;
-						BLRCD:Scale();
+						BLCD.profileDB.scale = value;
+						BLCD:Scale();
 					end,
 				},	
 				grow = {
@@ -110,14 +110,31 @@ BLRCD.options =  {
 					name = "Bar Grow Direction",
 					type = 'select',
 					get = function()
-						return BLRCD.profileDB.growth 
+						return BLCD.profileDB.growth 
 					end,
 					set = function(info, value)
-						BLRCD.profileDB.growth = value
+						BLCD.profileDB.growth = value
 					end,
 					values = {
 						['left'] = "Left",
 						['right'] = "Right",
+					},			
+				},
+				show = {
+					order = 6,
+					name = "Show Main Frame",
+					type = 'select',
+					get = function()
+						return BLCD.profileDB.show 
+					end,
+					set = function(info, value)
+						BLCD.profileDB.show = value
+					end,
+					values = {
+						['always'] = "Always",
+						['raid'] = "Raid",
+						['party'] = "Party",
+						['none'] = "None",
 					},			
 				},
 				configure = {
@@ -136,10 +153,10 @@ BLRCD.options =  {
 					name = "Click to Announce Available",
 					order = 10,
 					get = function()
-						return BLRCD.profileDB.clickannounce
+						return BLCD.profileDB.clickannounce
 					end,
 					set = function(key, value)
-						BLRCD.profileDB.clickannounce = value
+						BLCD.profileDB.clickannounce = value
 					end,
 				},
 			},
@@ -170,10 +187,10 @@ BLRCD.options =  {
 							name = "Devotion Aura",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.DA
+								return BLCD.profileDB.cooldown.DA
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.DA = value
+								BLCD.profileDB.cooldown.DA = value
 							end,
 						},
 						HOS = {
@@ -181,10 +198,10 @@ BLRCD.options =  {
 							name = "Hand of Sacrifice",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.HOS
+								return BLCD.profileDB.cooldown.HOS
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.HOS = value
+								BLCD.profileDB.cooldown.HOS = value
 							end,
 						},					
 					},
@@ -199,10 +216,10 @@ BLRCD.options =  {
 							name = "Power Word: Barrier",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.PWB
+								return BLCD.profileDB.cooldown.PWB
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.PWB = value
+								BLCD.profileDB.cooldown.PWB = value
 							end,
 						},
 						PS = {
@@ -210,10 +227,10 @@ BLRCD.options =  {
 							name = "Pain Suppression",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.PS
+								return BLCD.profileDB.cooldown.PS
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.PS = value
+								BLCD.profileDB.cooldown.PS = value
 							end,
 						},		
 						DH = {
@@ -221,10 +238,10 @@ BLRCD.options =  {
 							name = "Divine Hymn",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.DH
+								return BLCD.profileDB.cooldown.DH
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.DH = value
+								BLCD.profileDB.cooldown.DH = value
 							end,
 						},		
 						GS = {
@@ -232,10 +249,10 @@ BLRCD.options =  {
 							name = "Guardian Spirit",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.GS
+								return BLCD.profileDB.cooldown.GS
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.GS = value
+								BLCD.profileDB.cooldown.GS = value
 							end,
 						},		
 						VS = {
@@ -243,10 +260,10 @@ BLRCD.options =  {
 							name = "Void Shift",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.VS
+								return BLCD.profileDB.cooldown.VS
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.VS = value
+								BLCD.profileDB.cooldown.VS = value
 							end,
 						},
 						HH = {
@@ -254,10 +271,10 @@ BLRCD.options =  {
 							name = "Hymn Of Hope",
 							order = 2,
 							get = function()
-								return BLRCD.profileDB.cooldown.HH
+								return BLCD.profileDB.cooldown.HH
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.HH = value
+								BLCD.profileDB.cooldown.HH = value
 							end,
 						},							
 					},
@@ -272,10 +289,10 @@ BLRCD.options =  {
 							name = "Tranquility",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.T
+								return BLCD.profileDB.cooldown.T
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.T = value
+								BLCD.profileDB.cooldown.T = value
 							end,
 						},		
 						FE = {
@@ -283,10 +300,10 @@ BLRCD.options =  {
 							name = "Ironbark",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.FE
+								return BLCD.profileDB.cooldown.FE
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.FE = value
+								BLCD.profileDB.cooldown.FE = value
 							end,
 						},	
 						R = {
@@ -294,10 +311,10 @@ BLRCD.options =  {
 							name = "Rebirth",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.R
+								return BLCD.profileDB.cooldown.R
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.R = value
+								BLCD.profileDB.cooldown.R = value
 							end,
 						},	
 						I = {
@@ -305,10 +322,10 @@ BLRCD.options =  {
 							name = "Innervate",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.I
+								return BLCD.profileDB.cooldown.I
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.I = value
+								BLCD.profileDB.cooldown.I = value
 							end,
 						},		
 					},
@@ -323,10 +340,10 @@ BLRCD.options =  {
 							name = "Spirit Link Totem",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.SLT
+								return BLCD.profileDB.cooldown.SLT
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.SLT = value
+								BLCD.profileDB.cooldown.SLT = value
 							end,
 						},		
 						MTT = {
@@ -334,10 +351,10 @@ BLRCD.options =  {
 							name = "Mana Tide Totem",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.MTT
+								return BLCD.profileDB.cooldown.MTT
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.MTT = value
+								BLCD.profileDB.cooldown.MTT = value
 							end,
 						},		
 						HTT = {
@@ -345,10 +362,10 @@ BLRCD.options =  {
 							name = "Healing Tide Totem",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.HTT
+								return BLCD.profileDB.cooldown.HTT
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.HTT = value
+								BLCD.profileDB.cooldown.HTT = value
 							end,
 						},		
 						ST = {
@@ -356,10 +373,10 @@ BLRCD.options =  {
 							name = "Stormlash Totem",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.ST
+								return BLCD.profileDB.cooldown.ST
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.ST = value
+								BLCD.profileDB.cooldown.ST = value
 							end,
 						},		
 						COTE = {
@@ -367,10 +384,10 @@ BLRCD.options =  {
 							name = "Call of the Elements",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.COTE
+								return BLCD.profileDB.cooldown.COTE
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.COTE = value
+								BLCD.profileDB.cooldown.COTE = value
 							end,
 						},			
 					},
@@ -385,10 +402,10 @@ BLRCD.options =  {
 							name = "Zen Meditation",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.ZEN
+								return BLCD.profileDB.cooldown.ZEN
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.ZEN = value
+								BLCD.profileDB.cooldown.ZEN = value
 							end,
 						},	
 						LIFE = {
@@ -396,10 +413,10 @@ BLRCD.options =  {
 							name = "Life Cocoon",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.LIFE
+								return BLCD.profileDB.cooldown.LIFE
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.LIFE = value
+								BLCD.profileDB.cooldown.LIFE = value
 							end,
 						},	
 						REV = {
@@ -407,10 +424,10 @@ BLRCD.options =  {
 							name = "Revival",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.REV
+								return BLCD.profileDB.cooldown.REV
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.REV = value
+								BLCD.profileDB.cooldown.REV = value
 							end,
 						},	
 					},
@@ -425,10 +442,10 @@ BLRCD.options =  {
 							name = "Soulstone Resurrection",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.SR
+								return BLCD.profileDB.cooldown.SR
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.SR = value
+								BLCD.profileDB.cooldown.SR = value
 							end,
 						},
 					},
@@ -443,10 +460,10 @@ BLRCD.options =  {
 							name = "Raise Ally",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.RA
+								return BLCD.profileDB.cooldown.RA
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.RA = value
+								BLCD.profileDB.cooldown.RA = value
 							end,
 						},
 						AMZ = {
@@ -454,10 +471,10 @@ BLRCD.options =  {
 							name = "Anti-Magic Zone",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.AMZ
+								return BLCD.profileDB.cooldown.AMZ
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.AMZ = value
+								BLCD.profileDB.cooldown.AMZ = value
 							end,
 						},
 					},
@@ -472,10 +489,10 @@ BLRCD.options =  {
 							name = "Rallying Cry",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.RC
+								return BLCD.profileDB.cooldown.RC
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.RC = value
+								BLCD.profileDB.cooldown.RC = value
 							end,
 						},
 						DB = {
@@ -483,10 +500,10 @@ BLRCD.options =  {
 							name = "Demoralizing Banner",
 							order = 1,
 							get = function()
-								return BLRCD.profileDB.cooldown.DB
+								return BLCD.profileDB.cooldown.DB
 							end,
 							set = function(key, value)
-								BLRCD.profileDB.cooldown.DB = value
+								BLCD.profileDB.cooldown.DB = value
 							end,
 						},
 					},
@@ -494,4 +511,5 @@ BLRCD.options =  {
 			},
 		},
 	},
-}---------------------------------------------------
+}
+--------------------------------------------------------

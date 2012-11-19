@@ -15,7 +15,7 @@
 -- @name LibCandyBar-3.0
 
 local major = "LibCandyBar-3.0"
-local minor = tonumber(("$Rev: 38 $"):match("(%d+)")) or 1
+local minor = tonumber(("$Rev: 43 $"):match("(%d+)")) or 1
 if not LibStub then error("LibCandyBar-3.0 requires LibStub.") end
 local cbh = LibStub:GetLibrary("CallbackHandler-1.0")
 if not cbh then error("LibCandyBar-3.0 requires CallbackHandler-1.0") end
@@ -124,7 +124,7 @@ end
 
 local function restyleBar(self)
 	if not self.running then return end
-	if self.candyBarIconFrame:GetTexture() then
+	if self.candyBarIconFrame.icon then
 		self.candyBarBar:SetPoint("TOPLEFT", self.candyBarIconFrame, "TOPRIGHT")
 		self.candyBarBar:SetPoint("BOTTOMLEFT", self.candyBarIconFrame, "BOTTOMRIGHT")
 		self.candyBarIconFrame:SetWidth(self.height)
@@ -183,7 +183,7 @@ end
 function barPrototype:SetLabel(text) self.candyBarLabel:SetText(text); restyleBar(self) end
 --- Sets the icon next to the bar.
 -- @param icon Path to the icon texture or nil to not display an icon.
-function barPrototype:SetIcon(icon) self.candyBarIconFrame:SetTexture(icon); restyleBar(self) end
+function barPrototype:SetIcon(icon) self.candyBarIconFrame:SetTexture(icon); self.candyBarIconFrame.icon = icon; restyleBar(self) end
 --- Sets wether or not the time indicator on the right of the bar should be shown.
 -- Time is shown by default.
 -- @param bool true to show the time, false/nil to hide the time.
