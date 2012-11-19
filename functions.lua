@@ -53,7 +53,7 @@ function BLCD:ClassColorString (class)
 end
 
 function BLCD:print_raid()
-	return BLCD:print_r(BLCD['cooldownRoster'])
+	return BLCD:print_r(BLCD['raidRoster'])
 end
 
 function BLCD:sec2Min(secs)

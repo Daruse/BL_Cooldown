@@ -61,7 +61,7 @@ function BLCD:UpdateRoster(cooldown)
 							BLCD.cooldownRoster[cooldown['spellID']][i] = char['name']
 						end
 					elseif(cooldown["talent"] and char["talents"]) then
-						if(char["talents"][cooldown["talents"]]==cooldown["spellID"]) then 
+						if(char["talents"][cooldown["spellID"]]) then 
 							BLCD.cooldownRoster[cooldown['spellID']][i] = char['name']
 						end
 					else
