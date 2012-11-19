@@ -25,7 +25,7 @@ BLCD.defaults = {
 	profile = {
 		castannounce = false,
 		cdannounce = false,
-		clickannounce = false,
+		clickannounce = true,
 		scale = 1,
 		growth = "right",
 		show = "always",
@@ -55,6 +55,7 @@ BLCD.defaults = {
 			AMZ  = true,
 			RC   = true,
 			DB   = true,
+			SB	 = true,
 		},
 	},
 }
@@ -504,6 +505,17 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.DB = value
+							end,
+						},
+						SB = {
+							type = "toggle",
+							name = "Skull Banner",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SB
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SB = value
 							end,
 						},
 					},

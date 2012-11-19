@@ -209,6 +209,14 @@ BLCD.cooldowns = {
 		cast = 15,
 		class = "WARRIOR",
 	},
+	{ -- Skull Banner
+		spellID = 114207,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "SB",
+		CD = 180,
+		cast = 10,
+		class = "WARRIOR",
+	},
 }
 --------------------------------------------------------
 
