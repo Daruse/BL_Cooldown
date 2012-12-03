@@ -69,7 +69,7 @@
 --     Returns an array with the set of unit ids for the current group.
 --]]
 
-local MAJOR, MINOR = "LibGroupInSpecT-1.0", tonumber (("45"):match ("(%d+)") or 0)
+local MAJOR, MINOR = "LibGroupInSpecT-1.0", tonumber (("46"):match ("(%d+)") or 0)
 
 if not LibStub then error(MAJOR.." requires LibStub") end
 local lib = LibStub:NewLibrary (MAJOR, MINOR)
@@ -564,8 +564,8 @@ function lib:SendLatestSpecData ()
   end
   
   if UnitInBattleground ("player") then
-    debug ("Sending LGIST update to BATTLEGROUND")
-    SendAddonMessage(COMMS_PREFIX, datastr, "BATTLEGROUND")
+    debug ("Sending LGIST update to INSTANCE_CHAT")
+    SendAddonMessage(COMMS_PREFIX, datastr, "INSTANCE_CHAT")
   elseif IsInRaid () or GetNumGroupMembers () > 0 then
     debug ("Sending LGIST update to RAID/GROUP")
     SendAddonMessage(COMMS_PREFIX, datastr, "RAID")
