@@ -26,13 +26,24 @@ function BLCD:OnUpdate(event, info)
     local guid = info.guid
 	if not baseclass or not guid or not spec_id or not talents or not guid then return end	
 	local  _,classFilename = GetPlayerInfoByGUID(guid)
+	local raid_id
+	
+	if(string.len(info.lku)==5) then
+		raid_id = tonumber(string.sub(info.lku,-1))
+	elseif(string.len(info.lku)==6) then
+		raid_id = tonumber(string.sub(info.lku,-2))
+	end
 
-
-	BLCD['raidRoster'][guid] = BLCD['raidRoster'][guid] or {}
-	BLCD['raidRoster'][guid]['name'] = name
-	BLCD['raidRoster'][guid]['class']= classFilename
-	BLCD['raidRoster'][guid]['spec'] = spec_id
-	BLCD['raidRoster'][guid]['talents'] = talents
+	if(raid_id) then
+		if(raid_id < 26) then
+			BLCD['raidRoster'][guid] = BLCD['raidRoster'][guid] or {}
+			BLCD['raidRoster'][guid]['name'] = name
+			BLCD['raidRoster'][guid]['class']= classFilename
+			BLCD['raidRoster'][guid]['spec'] = spec_id
+			BLCD['raidRoster'][guid]['talents'] = talents
+			BLCD['raidRoster'][guid]['lku'] = info.lku
+		end
+	end
 end
 
 function BLCD:OnRemove(guid)
@@ -310,6 +321,13 @@ function BLCD:SlashProcessor_BLCD(input)
 		BLCD:ToggleVisibility()
 	elseif v1 == "raid" then
 		BLCD:print_raid()
+
+		local raidsize = 0
+
+		for i, char in pairs(BLCD['raidRoster']) do
+			raidsize = raidsize + 1
+		end
+		print(raidsize)
 	elseif v1 == "config" then
 		AceConfigDialog:Open("BLCD")
 	end
